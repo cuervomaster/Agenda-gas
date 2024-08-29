@@ -4,6 +4,54 @@
     // const NOTIFICACION_DANGER = 2;
     // const NOTIFICACION_WARNING = 3;
 
+    function insertarContacto()
+    {
+        // obtener datos
+        // aquí se toma el id del elemento para referenciarlo
+        let nombre = document.getElementById('nombre').value ;
+        let correo = document.getElementById('correo').value ;
+
+        //eliminar tabla
+        eliminarTabla();
+
+
+        // Cargar Loader
+        crearLoaderPuntos('divContactos');
+
+
+        google.script.run
+        .withSuccessHandler(ContactoInsertadoCorrectamente)
+        .withFailureHandler(ContactoInsertadoError)
+        .insertarContacto(nombre,correo);
+    }
+
+    function ContactoInsertadoCorrectamente()
+    {
+      //eliminamos los textos de los inputs en el formulario
+      document.getElementById('nombre').value = '';
+      document.getElementById('correo').value = '';
+
+      //mostrar notificación
+      crearNotificacionOK('Contacto insertado correctamente', 'Contacto OK');
+
+      //eliminar Loader
+      eliminarLoader();
+
+      //mostrar la tabla
+      crearTablaContactos();
+
+    }
+
+    function ContactoInsertadoError()
+    {
+      crearNotificacionError('No se ha podido insertar el Contacto','ERROR');
+      //eliminar Loader
+      eliminarLoader();
+
+      //mostrar la tabla
+      crearTablaContactos();
+    }
+
     function crearTablaContactos()
     {
         // eliminar tabla
@@ -67,7 +115,7 @@
         document.getElementById('divContactos').appendChild(tabla);
 
         //mostrar notificación de ok
-        crearNotificacionOK('Contactos creados correctamente','Todo en orden');
+        crearNotificacionOK('Contactos cargados correctamente','Todo en orden');
 
         //eliminar el loader
         eliminarLoader();
