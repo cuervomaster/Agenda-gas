@@ -9,7 +9,9 @@
         // obtener datos
         // aquí se toma el id del elemento para referenciarlo
         let nombre = document.getElementById('nombre').value ;
+        let apellidos = document.getElementById('apellidos').value ;
         let correo = document.getElementById('correo').value ;
+        let telf = document.getElementById('telf').value ;
 
         //cerrar modal
        bootstrap.Modal.getInstance(document.getElementById('crearContactoModal')).hide();
@@ -25,14 +27,16 @@
         google.script.run
         .withSuccessHandler(ContactoInsertadoCorrectamente)
         .withFailureHandler(ContactoInsertadoError)
-        .insertarContacto(nombre,correo);
+        .insertarContacto(nombre,apellidos,correo,telf);
     }
 
     function ContactoInsertadoCorrectamente()
     {
       //eliminamos los textos de los inputs en el formulario
       document.getElementById('nombre').value = '';
+      document.getElementById('apellidos').value = '';
       document.getElementById('correo').value = '';
+      document.getElementById('telf').value = '';
 
       //mostrar notificación
       crearNotificacionOK('Contacto insertado correctamente', 'Contacto OK');
