@@ -129,9 +129,6 @@
         ///agregamos la tabla a la página
         document.getElementById('divContactos').appendChild(tabla);
 
-        //mostrar notificación de ok
-        crearNotificacionOK('Contactos cargados correctamente','Todo en orden');
-
         //eliminar el loader
         eliminarLoader();
 
@@ -282,7 +279,6 @@
         crearTablaContactos();
     }
 
-
     function contactoBorradoCorrectamente()
     {
         //mostrar notificación
@@ -309,163 +305,36 @@
         
     }
 
-
-
-    //
-    // NOTIFICACIONES
-    //
-
-    const ICONO_CHECK = 'bi-check2-square';
-    const ICONO_PAPELERA = 'bi-trash';
-    const ICONO_CONTACTO = 'bi-person-plus-fill';
-    const ICONO_ERROR = 'bi-bug';
-    const ICONO_ADVERTENCIA = 'bi-exclamation-square';
-
-    function crearNotificacionOK(mensaje, titulo)
+    function importarContactos()
     {
-        crearNotificacion(titulo,mensaje,ICONO_CHECK,'--color-verde-oscuro');
+        // eliminar tabla
+        eliminarTabla();
+
+        // Cargar Loader
+        crearLoaderPuntos('divContactos');
+
+
+        google.script.run
+        .withSuccessHandler(contactosImportadosCorrectamente)
+        .withFailureHandler(contactosImportadosError)
+        .importarContactos();
     }
 
-    function crearNotificacionError(mensaje, titulo)
+    function contactosImportadosCorrectamente()
     {
-        crearNotificacion(titulo,mensaje,ICONO_ERROR,'--color-rojo-oscuro');
-    }
-
-    function crearNotificacionContacto(mensaje, titulo)
-    {
-        crearNotificacion(titulo,mensaje,ICONO_CONTACTO,'--color-azul-oscuro');
-    }
-
-    function crearNotificacionAdvertencia(mensaje, titulo)
-    {
-        crearNotificacion(titulo,mensaje,ICONO_ADVERTENCIA,'--color-amarillo-oscuro');
-    }
-
-    function crearNotificacionBorrar(mensaje, titulo)
-    {
-        crearNotificacion(titulo,mensaje,ICONO_PAPELERA,'--color-gris-oscuro');
-    }
-
-    function crearNotificacion(titulo,mensaje,icono,color)
-    {
-        let notificacion = crearAtributosNotificacion();
-        let cabeceraNotificacion = crearCabeceraNotificacion(titulo,icono);
-        let cuerpoNotificacion = crearCuerpoNotificacion(mensaje);
-
-        //agregar cabecera y cuerpo
-        notificacion.appendChild(cabeceraNotificacion);
-        notificacion.appendChild(cuerpoNotificacion);
-
-        //establecer color
-        notificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue(color);
-
-        //evento para que se elimine al ocultarse
-        notificacion.addEventListener('hidden.bs.toast',function()
-        {
-            this.remove
-        });
-
-        //agregamos al contenedor de notificaciones
-        document.getElementById('contenedorNotificaciones').appendChild(notificacion);
-
-        //instancia y mostrar
-        bootstrap.Toast.getOrCreateInstance(notificacion).show();
-
+        //mostrar notificación
+        crearNotificacionOK('Se han agregado los contactos correctamente', 'OK');
+        eliminarLoader();
+        crearTablaContactos();
 
     }
 
-    function crearAtributosNotificacion()
+    function contactosImportadosError()
     {
-        let notificacion = document.createElement('div');
-        notificacion.classList.add('toast', 'align-items-center', 'text-white', 'border-0');
-        notificacion.setAttribute('role','alert');
-        notificacion.setAttribute('aria-live','assertive');
-        notificacion.setAttribute('aria-atomic','true');
-
-        return notificacion;
+        crearNotificacionError('No se ha podido importar los Contactos','ERROR');
+        eliminarLoader();
+        crearTablaContactos();
     }
-
-    function crearCabeceraNotificacion(titulo,icono)
-    {
-        //crear cabecera
-        let cabeceraNotificacion = document.createElement('div');
-        cabeceraNotificacion.classList.add('toast-header', 'p-0');
-
-        //crear el icono, pasando el contenedor
-        crearIconoNotificacion(cabeceraNotificacion,icono);
-
-        //crear el titulo
-        let tituloNotificacion = document.createElement('strong');
-        tituloNotificacion.classList.add('mx-2')
-        tituloNotificacion.textContent = titulo;
-
-        cabeceraNotificacion.appendChild(tituloNotificacion)
-        return cabeceraNotificacion;
-
-
-
-    }
-
-    function crearIconoNotificacion(contenedor,icono)
-    {
-        let divIcono = document.createElement('div');
-        let iconoNotificacion = document.createElement('i');
-        divIcono.classList.add('icono-notificacion')
-        iconoNotificacion.classList.add('bi',icono);
-        divIcono.appendChild(iconoNotificacion);
-        contenedor.appendChild(divIcono);
-
-    }
-
-    function crearCuerpoNotificacion(mensaje)
-    {
-        let cuerpoNotificacion = document.createElement('div');
-        cuerpoNotificacion.classList.add('toast-body');
-        cuerpoNotificacion.textContent = mensaje;
-        return cuerpoNotificacion ;
-
-    }
-
-
-
-    // function crearNotificacionOLD(tipo,mensaje, titulo)
-    // {
-    //     //obtener datos de la notificación
-    //     let mensajeNotificacion = document.getElementById('mensajeNotificacion');
-    //     let tituloNotificacion = document.getElementById('tituloNotificacion');
-    //     let elementoNotificacion = document.getElementById('notificacion');
-    //     let iconoNotificacion = document.getElementById('iconoNotificacion');
-    //     let notificacion = bootstrap.Toast.getOrCreateInstance(elementoNotificacion);
-
-
-    //     //editar la notificación
-    //     mensajeNotificacion.textContent = mensaje;
-    //     tituloNotificacion.textContent = titulo;
-        
-    //     switch(tipo)
-    //     {
-    //         case NOTIFICACION_OK:
-    //             iconoNotificacion.className = '';
-    //             iconoNotificacion.classList.add('bi','bi-check2-square');
-    //             elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-verde-oscuro');
-    //             break ;
-    //         case NOTIFICACION_DANGER:
-    //             iconoNotificacion.className = '';
-    //             iconoNotificacion.classList.add('bi','bi-bug');
-    //             elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-rojo-oscuro');
-    //             break ;
-    //         case NOTIFICACION_WARNING:
-    //             iconoNotificacion.className = '';
-    //             iconoNotificacion.classList.add('bi','bi-exclamation-square');
-    //             elementoNotificacion.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--color-amarillo-oscuro');
-    //             break ;            
-    //     }
-
-
-    //     //mostrar notificación
-    //     notificacion.show();
-
-    // }
 
     function crearLoader(elementoPadre)
     {
@@ -491,7 +360,6 @@
         let loader = crearLoader(elementoPadre);
         loader.classList.add('lds-ring');
     }
-
 
     function eliminarLoader()
     {
